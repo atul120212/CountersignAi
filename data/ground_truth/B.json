@@ -1,0 +1,18 @@
+{
+  "document": "B_net15_sow_corelogix.pdf",
+  "synthetic": true,
+  "document_type": "STATEMENT_OF_WORK",
+  "vendor_name": "CoreLogix Systems Inc.",
+  "vendor_country": "USA",
+  "total_value": 92000.0,
+  "currency": "USD",
+  "payment_terms_days": 15,
+  "milestone_billing": true,
+  "liability_cap": "1.0x_ANNUAL_FEES",
+  "governing_law": "New York",
+  "warranty_period_days": 120,
+  "auto_renewal": true,
+  "auto_renewal_notice_days": 90,
+  "expected_action": "ROUTE_TO_TREASURY",
+  "expected_risk_level": "MEDIUM"
+}

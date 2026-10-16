@@ -1,0 +1,18 @@
+{
+  "document": "G_eur_currency_sow_lumen.pdf",
+  "synthetic": true,
+  "document_type": "STATEMENT_OF_WORK",
+  "vendor_name": "Lumen Data GmbH",
+  "vendor_country": "Germany",
+  "total_value": 88000.0,
+  "currency": "EUR",
+  "payment_terms_days": 60,
+  "milestone_billing": true,
+  "liability_cap": "1.0x_ANNUAL_FEES",
+  "governing_law": "England and Wales",
+  "warranty_period_days": 90,
+  "auto_renewal": false,
+  "auto_renewal_notice_days": null,
+  "expected_action": "APPROVE_AND_STAGE",
+  "expected_risk_level": "LOW"
+}

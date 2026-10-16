@@ -1,0 +1,18 @@
+{
+  "document": "F_scanned_page_sow_meridian.pdf",
+  "synthetic": true,
+  "document_type": "STATEMENT_OF_WORK",
+  "vendor_name": "Meridian Logistics Partners",
+  "vendor_country": "USA",
+  "total_value": 52500.0,
+  "currency": "USD",
+  "payment_terms_days": 30,
+  "milestone_billing": true,
+  "liability_cap": "1.0x_ANNUAL_FEES",
+  "governing_law": "Delaware",
+  "warranty_period_days": 90,
+  "auto_renewal": false,
+  "auto_renewal_notice_days": null,
+  "expected_action": "ROUTE_TO_TREASURY",
+  "expected_risk_level": "MEDIUM"
+}

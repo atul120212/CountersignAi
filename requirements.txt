@@ -1,0 +1,12 @@
+fastapi==0.112.0
+uvicorn[standard]==0.30.5
+pydantic==2.13.3
+python-multipart==0.0.9
+httpx==0.28.1
+aiohttp>=3.10.11
+google-genai==2.31.0
+google-cloud-firestore==2.34.1
+google-cloud-storage==3.17.1
+google-cloud-bigquery==3.46.2
+firebase-admin==7.7.0
+pypdf==6.21.0

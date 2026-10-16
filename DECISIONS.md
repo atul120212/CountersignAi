@@ -1,0 +1,15 @@
+# Decisions and deviations from the build brief
+
+| # | Brief said | Built | Why |
+|---|---|---|---|
+| 1 | Gemini 2.0 Flash / 1.5 Pro | `gemini-3.5-flash` for all agents, read from `GEMINI_FLASH_MODEL` / `GEMINI_AUDIT_MODEL`, with fallbacks `gemini-3.8-flash, gemini-3.5-flash-lite, gemini-flash-latest`, location `global` | 2.0 Flash shut down on 1 June 2026 and Gemini 2.5 retires on Vertex AI on 20 Oct 2026, during evaluation. 3.5 Flash is stable with shutdown no earlier than May 2027. Flash keeps end-to-end latency inside the 20 s target. |
+| 2 | Three Cloud Run services (api, agent, mock) | One Cloud Run service; gate, agents and mock are separate modules | About 2 days remained and the deploy must be reliable through evaluation. The "agents cannot write" guarantee is enforced by a static import test plus the atomic state machine. `MOCK_SERVICE_URL` lets the mock run as a separate private service with OIDC later. |
+| 3 | Document AI for OCR and key-value extraction | Gemini multimodal PDF input, plus code that verifies every quote against the PDF text layer (pypdf) | Removes processor setup and page limits; Gemini reads scanned pages (doc F). Grounding is kept by checking quotes in code, and confidence is computed from that check. |
+| 4 | Vertex AI Search datastore | In-service hybrid retrieval (BM25 + Gemini embeddings) over a section-chunked corpus with retrieval IDs | Datastore creation and indexing are slow and fragile on a fresh project. The verifier contract (retrieval_id + verbatim snippet from this run) is the same, so Vertex AI Search can replace `policy_kb.py` behind the same interface. |
+| 5 | Google ADK agents | Plain Python agents with a fixed-order runner | The brief allowed a thin framework layer ("keep agent logic in plain Python functions"). It avoids ADK API drift; the ADK-free orchestration is deterministic by construction. |
+| 6 | Audit log in BigQuery | Hash chain written transactionally in Firestore (`cases/{id}/audit`), mirrored best-effort to BigQuery | Firestore transactions give an atomic `lastAuditHash` update and verification reads are cheap. BigQuery remains the queryable analytics copy. |
+| 7 | Signed GCS upload URLs | Multipart upload to the API (15 MB cap, PDF magic-byte check), stored in GCS | Signed URLs need `signBlob` IAM on the runtime account; direct upload is simpler for the demo. |
+| 8 | Next.js + react-pdf | Static vanilla JS + pdf.js | No build step; the same files are served by Cloud Run and Firebase Hosting. |
+| 9 | Severity chosen by the model | Severity from a category matrix in `rules.py`; the model decides violation + reasoning; guards override when the model says "compliant" on a hard-limit breach | Design principle D3. |
+| 10 | (not in brief) | Anonymous "guest analyst" sign-in, per-user rate limit (40 runs/hour) | Evaluators need one-click access; the limit protects the Gemini budget on a public URL. |
+| 11 | (not in brief) | `EMBEDDED_INSTRUCTIONS` category and `ROUTE_TO_LEGAL_REVIEW` action | Prompt-injection text (doc J) and missing legal terms (doc D) need a grounded finding and a route that is weaker than VP escalation. |

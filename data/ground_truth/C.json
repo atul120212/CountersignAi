@@ -1,0 +1,18 @@
+{
+  "document": "C_critical_sow_apex_cloud.pdf",
+  "synthetic": true,
+  "document_type": "STATEMENT_OF_WORK",
+  "vendor_name": "Apex Cloud Solutions LLC",
+  "vendor_country": "USA",
+  "total_value": 145000.0,
+  "currency": "USD",
+  "payment_terms_days": 15,
+  "milestone_billing": true,
+  "liability_cap": "UNLIMITED",
+  "governing_law": "Delaware",
+  "warranty_period_days": 30,
+  "auto_renewal": true,
+  "auto_renewal_notice_days": 30,
+  "expected_action": "ROUTE_TO_LEGAL_AND_VP_APPROVAL",
+  "expected_risk_level": "CRITICAL"
+}

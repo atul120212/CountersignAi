@@ -1,0 +1,11 @@
+[
+  {"name": "event_id", "type": "STRING", "mode": "REQUIRED"},
+  {"name": "case_id", "type": "STRING", "mode": "REQUIRED"},
+  {"name": "event_type", "type": "STRING", "mode": "REQUIRED"},
+  {"name": "actor", "type": "STRING"},
+  {"name": "seq", "type": "INTEGER"},
+  {"name": "payload", "type": "STRING", "description": "canonical JSON"},
+  {"name": "ts", "type": "TIMESTAMP"},
+  {"name": "prev_hash", "type": "STRING"},
+  {"name": "row_hash", "type": "STRING"}
+]

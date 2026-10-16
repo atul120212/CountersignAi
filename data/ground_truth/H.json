@@ -1,0 +1,18 @@
+{
+  "document": "H_invoice_brightpath.pdf",
+  "synthetic": true,
+  "document_type": "INVOICE",
+  "vendor_name": "BrightPath Analytics Ltd",
+  "vendor_country": "USA",
+  "total_value": 12400.0,
+  "currency": "USD",
+  "payment_terms_days": 30,
+  "milestone_billing": false,
+  "liability_cap": null,
+  "governing_law": null,
+  "warranty_period_days": null,
+  "auto_renewal": null,
+  "auto_renewal_notice_days": null,
+  "expected_action": "ROUTE_TO_TREASURY",
+  "expected_risk_level": "MEDIUM"
+}

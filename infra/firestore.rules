@@ -1,0 +1,22 @@
+rules_version = '2';
+// Clients may only READ their own cases and live trace. Every write goes through the backend
+// (Admin SDK on Cloud Run), so the approval gate cannot be bypassed from the browser.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owns(caseId) {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/cases/$(caseId)).data.ownerUid == request.auth.uid;
+    }
+    match /cases/{caseId} {
+      allow read: if request.auth != null && resource.data.ownerUid == request.auth.uid;
+      allow write: if false;
+      match /trace/{eventId} {
+        allow read: if owns(caseId);
+        allow write: if false;
+      }
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "firestore": { "rules": "infra/firestore.rules" },
+  "hosting": {
+    "public": "web",
+    "ignore": ["**/.*"],
+    "headers": [{ "source": "**/*.@(js|css|html)", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }],
+    "rewrites": [
+      { "source": "/api/**", "run": { "serviceId": "operateguard", "region": "us-central1" } },
+      { "source": "/healthz", "run": { "serviceId": "operateguard", "region": "us-central1" } }
+    ]
+  }
+}

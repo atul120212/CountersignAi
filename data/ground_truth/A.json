@@ -1,0 +1,18 @@
+{
+  "document": "A_clean_sow_brightpath.pdf",
+  "synthetic": true,
+  "document_type": "STATEMENT_OF_WORK",
+  "vendor_name": "BrightPath Analytics Ltd",
+  "vendor_country": "USA",
+  "total_value": 48000.0,
+  "currency": "USD",
+  "payment_terms_days": 60,
+  "milestone_billing": true,
+  "liability_cap": "1.0x_ANNUAL_FEES",
+  "governing_law": "Delaware",
+  "warranty_period_days": 90,
+  "auto_renewal": false,
+  "auto_renewal_notice_days": null,
+  "expected_action": "APPROVE_AND_STAGE",
+  "expected_risk_level": "LOW"
+}

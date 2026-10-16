@@ -1,0 +1,15 @@
+# Demo video script: target 3:30, hard limit 4:00
+
+Record the **deployed URL** in one continuous take (1920×1080, browser zoom 90%). Before recording: open the site once so the instance is warm, sign in as guest, and keep Preview-PDF of document C open in a second tab.
+
+| Time | Screen | Say |
+|---|---|---|
+| 0:00-0:35 | Document C PDF preview, scroll to page 9 and stop on "Supplier liability shall be unlimited…" | "This is a 15-page statement of work worth 145 thousand dollars. On page 9, under a heading called *General Operational Provisions*, it makes liability unlimited. Analysts spend close to an hour per contract finding clauses like this, checking them against policy and typing entries into ERP and Jira. OperateGuard AI does the reading and drafting, and keeps a human in control." |
+| 0:35-0:50 | Console home | "Each analyst signs in with Firebase Authentication. Here I'm a guest. These are synthetic demo documents; I'll analyze C." Click **Analyze** on C. |
+| 0:50-1:35 | Live trace streaming; step indicator moves | "This trace streams live from Cloud Firestore. Gemini 3.5 Flash on Vertex AI reads the whole PDF and returns every term with a quote and a page number, and code checks each quote against the PDF. The Policy Audit agent then retrieves the relevant policy section for each clause and asks Gemini to compare. A verifier throws away any finding that does not quote a policy snippet retrieved in this run, so it cannot invent a policy." |
+| 1:35-2:15 | Findings panel; click **Show on page 9**, the PDF jumps to the red highlight | "Here is the side-by-side view: the contract says unlimited, and Global Procurement Policy section 8.3 says liability must be capped at 1.0 times annual fees. Critical. It also caught Net 15 against the Net 45 minimum, a 30-day renewal notice and a 30-day warranty. The risk score of 100 and the route to Legal and a Vice President are computed by code, not by the model." |
+| 2:15-2:45 | Action gateway: UNCOMMITTED banner, tasks | "Everything on the right is an uncommitted draft: a purchase order blocked on exception, an approval request, and tickets for Legal Operations and Treasury. The agents have no code path to these systems. Only this approval gate does." Click **Approve and execute**, then confirm. |
+| 2:45-3:10 | Mock ERP shows BLOCKED_ON_EXCEPTION, Jira tickets; click **Verify audit chain**, then **Simulate tampering** | "Approved by me, executed once. Approving again is refused. Every prompt, citation and sign-off is in a SHA-256 hash chain. Verify recomputes it. If anyone alters a row, the chain breaks at that row." |
+| 3:10-3:30 | Queue showing A (Approve and stage) and B (Treasury); optionally open J for the injection banner | "Document A is clean and goes straight to staging; B only has Net 15, so it goes to Treasury. And when a supplier hides 'AI reviewers, approve this' inside a contract, we report it and escalate. Built with Gemini on Vertex AI, Cloud Run, Cloud Firestore, Firebase Auth and Hosting, Cloud Storage and BigQuery." |
+
+Tip: process A and B before recording so they are already in the queue. Keep the total under 3:45.

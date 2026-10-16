@@ -1,0 +1,18 @@
+{
+  "document": "D_missing_fields_sow_quillworks.pdf",
+  "synthetic": true,
+  "document_type": "STATEMENT_OF_WORK",
+  "vendor_name": "Quillworks Content Studio",
+  "vendor_country": "USA",
+  "total_value": 38000.0,
+  "currency": "USD",
+  "payment_terms_days": 45,
+  "milestone_billing": false,
+  "liability_cap": "1.0x_ANNUAL_FEES",
+  "governing_law": null,
+  "warranty_period_days": null,
+  "auto_renewal": false,
+  "auto_renewal_notice_days": null,
+  "expected_action": "ROUTE_TO_LEGAL_REVIEW",
+  "expected_risk_level": "LOW"
+}

@@ -1,0 +1,18 @@
+{
+  "document": "I_unusual_unlimited_sow_tessellate.pdf",
+  "synthetic": true,
+  "document_type": "STATEMENT_OF_WORK",
+  "vendor_name": "Tessellate Security Ltd",
+  "vendor_country": "United Kingdom",
+  "total_value": 71000.0,
+  "currency": "USD",
+  "payment_terms_days": 60,
+  "milestone_billing": true,
+  "liability_cap": "UNLIMITED",
+  "governing_law": "England and Wales",
+  "warranty_period_days": 90,
+  "auto_renewal": false,
+  "auto_renewal_notice_days": null,
+  "expected_action": "ROUTE_TO_LEGAL_AND_VP_APPROVAL",
+  "expected_risk_level": "CRITICAL"
+}

@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.local_uploads/
+.env
+infra/.env.yaml
+.firebase/
+firebase-debug.log
+firestore-debug.log
+eval/_local/
