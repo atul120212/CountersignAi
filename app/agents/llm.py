@@ -74,8 +74,10 @@ class GeminiClient:
                     last = e
                     s = str(e).lower()
                     if any(k in s for k in ("429", "resource_exhausted", "503", "unavailable", "deadline")) and attempt < 3:
-                        log.warning("transient Gemini error on %s, retrying: %s", m, e)
-                        await asyncio.sleep(1.5 * (attempt + 1))
+                        # Rate limits (common on free Gemini API keys) back off longer than transient 503s.
+                        wait = (4, 8, 15)[attempt] if ("429" in s or "resource_exhausted" in s) else 1.5 * (attempt + 1)
+                        log.warning("transient Gemini error on %s, retrying in %ss: %s", m, wait, e)
+                        await asyncio.sleep(wait)
                         continue
                     if self._thinking_ok and "think" in s:
                         log.warning("thinking config rejected by %s, retrying without: %s", m, e)

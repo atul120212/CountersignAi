@@ -71,7 +71,7 @@ async function boot() {
     fb = { auth: authM.getAuth(app), authM, db: fsM.getFirestore(app), fsM };
     authM.onAuthStateChanged(fb.auth, (u) => { USER = u; renderUser(); route(); });
   } else {
-    USER = { local: true, displayName: "Local Analyst", uid: "local-analyst" };
+    USER = { local: true, displayName: CFG.demoUser || "Demo Analyst", uid: "demo-analyst" };
     renderUser(); route();
   }
   window.addEventListener("hashchange", route);
@@ -87,7 +87,7 @@ function renderUser() {
   const box = document.getElementById("userbox");
   if (!USER) { box.innerHTML = ""; return; }
   const n = userName();
-  box.innerHTML = `<span class="small muted hide-sm">${CFG.realtime ? "Live: Firestore" : "Live: polling"} · ${esc(CFG.models.extraction)}</span>
+  box.innerHTML = `<span class="small muted hide-sm">${fb ? "" : "Shared demo workspace · "}${CFG.realtime ? "Live: Firestore" : "Live: polling"} · ${esc(CFG.models.extraction)}</span>
     <span class="avatar" title="${esc(n)}">${esc(n.slice(0, 1).toUpperCase())}</span><span>${esc(n)}</span>
     ${fb ? `<button class="btn sm ghost" id="signout">Sign out</button>` : ""}`;
   const so = document.getElementById("signout");
@@ -132,8 +132,12 @@ function route() {
 }
 
 // ------------------------------------------------------------------ home
+function configBanner() {
+  return (CFG.warnings || []).map((w) => `<div class="alert crit">Setup needed: ${esc(w)}</div>`).join("");
+}
+
 async function renderHome() {
-  $app.innerHTML = `<div class="flow"><span class="s">Upload PDF</span><span class="a">→</span><span class="s">Gemini extraction</span><span class="a">→</span>
+  $app.innerHTML = `${configBanner()}<div class="flow"><span class="s">Upload PDF</span><span class="a">→</span><span class="s">Gemini extraction</span><span class="a">→</span>
     <span class="s">Policy retrieval + verified citations</span><span class="a">→</span><span class="s">Deterministic risk + routing</span><span class="a">→</span>
     <span class="s">Human approval gate</span><span class="a">→</span><span class="s">Mock ERP / Jira</span><span class="a">→</span><span class="s">Hash-chained audit</span></div>
     <div class="home">

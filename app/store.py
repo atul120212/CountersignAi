@@ -10,13 +10,14 @@ Firestore layout
 from __future__ import annotations
 
 import copy
+import tempfile
 import threading
 import time
 import uuid
 from pathlib import Path
 from typing import Callable, Optional
 
-from .config import ROOT, settings
+from .config import ON_VERCEL, ROOT, settings
 from .hashing import GENESIS, row_hash
 
 
@@ -42,6 +43,15 @@ class Store:  # interface
     def list_audit(self, case_id: str) -> list[dict]: ...
     def put_mock(self, collection: str, doc_id: str, data: dict) -> None: ...
     def list_mock(self, collection: str, case_id: str) -> list[dict]: ...
+    def put_blob(self, key: str, data: bytes) -> None: ...
+    def get_blob(self, key: str) -> bytes: ...
+
+
+BLOB_CHUNK = 900_000  # Firestore documents are limited to 1 MiB
+
+
+def split_chunks(data: bytes, size: int = BLOB_CHUNK) -> list[bytes]:
+    return [data[i:i + size] for i in range(0, len(data), size)] or [b""]
 
 
 def _chain(row: dict, prev: str, seq: int) -> dict:
@@ -60,6 +70,7 @@ class MemoryStore(Store):
         self.decisions: dict[str, list[dict]] = {}
         self.audit: dict[str, list[dict]] = {}
         self.mock: dict[str, dict[str, dict]] = {}
+        self.blobs: dict[str, list[bytes]] = {}
 
     def create_case(self, case):
         with self._lock:
@@ -129,6 +140,14 @@ class MemoryStore(Store):
     def list_mock(self, collection, case_id):
         with self._lock:
             return [copy.deepcopy(d) for d in self.mock.get(collection, {}).values() if d.get("case_id") == case_id]
+
+    def put_blob(self, key, data):
+        with self._lock:
+            self.blobs[key] = split_chunks(data)
+
+    def get_blob(self, key):
+        with self._lock:
+            return b"".join(self.blobs[key])
 
 
 class FirestoreStore(Store):
@@ -211,22 +230,45 @@ class FirestoreStore(Store):
         q = self.db.collection(collection).where(filter=self._fs.FieldFilter("case_id", "==", case_id))
         return [d.to_dict() for d in q.stream()]
 
+    # Uploaded PDFs on hosts without a bucket (e.g. Vercel): chunked server-only documents in blobs/.
+    def put_blob(self, key, data):
+        ref = self.db.collection("blobs").document(key)
+        chunks = split_chunks(data)
+        for i, c in enumerate(chunks):  # one write per chunk: a batch is capped at 10 MiB
+            ref.collection("chunks").document(f"{i:04d}").set({"i": i, "data": c})
+        ref.set({"chunks": len(chunks), "size": len(data), "ts": now_ms()})  # written last = upload complete
+
+    def get_blob(self, key):
+        ref = self.db.collection("blobs").document(key)
+        meta = ref.get()
+        if not meta.exists:
+            raise KeyError(key)
+        parts = sorted((d.to_dict() for d in ref.collection("chunks").stream()), key=lambda d: d["i"])
+        if len(parts) != meta.to_dict()["chunks"]:
+            raise ValueError(f"blob {key} is incomplete")
+        return b"".join(p["data"] for p in parts)
+
 
 # ------------------------------------------------------------------ blobs
 class BlobStore:
-    """Uploaded PDFs: Cloud Storage when GCS_BUCKET is set, otherwise a local folder."""
+    """Uploaded PDFs: Cloud Storage when GCS_BUCKET is set; otherwise Firestore (chunked) when the
+    store is Firestore (serverless hosts such as Vercel); otherwise a local folder (development)."""
 
     def __init__(self) -> None:
         self.bucket = None
         if settings.gcs_bucket:
             from google.cloud import storage
             self.bucket = storage.Client(project=settings.project or None).bucket(settings.gcs_bucket)
-        self.local = ROOT / ".local_uploads"
+        self.local = (Path(tempfile.gettempdir()) / "operateguard_uploads") if ON_VERCEL else ROOT / ".local_uploads"
 
     def put(self, key: str, data: bytes) -> str:
         if self.bucket is not None:
             self.bucket.blob(key).upload_from_string(data, content_type="application/pdf")
             return f"gs://{self.bucket.name}/{key}"
+        if settings.store_backend == "firestore":
+            safe = key.replace("/", "__")
+            get_store().put_blob(safe, data)
+            return f"fsblob://{safe}"
         path = self.local / key
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)
@@ -238,6 +280,8 @@ class BlobStore:
             bucket, _, key = rest.partition("/")
             assert self.bucket is not None and bucket == self.bucket.name
             return self.bucket.blob(key).download_as_bytes()
+        if uri.startswith("fsblob://"):
+            return get_store().get_blob(uri[len("fsblob://"):])
         if uri.startswith("file://"):
             return (self.local / uri[len("file://"):]).read_bytes()
         if uri.startswith("sample://"):

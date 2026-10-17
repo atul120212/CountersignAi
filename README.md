@@ -7,7 +7,7 @@ An analyst uploads a vendor SOW, contract or invoice. Gemini extracts the key te
 
 | | |
 |---|---|
-| **Live prototype** | `https://<PROJECT_ID>.web.app` (Firebase Hosting) · `https://operateguard-<hash>-uc.a.run.app` (Cloud Run) |
+| **Live prototype** | `https://<PROJECT_ID>.web.app` (Firebase Hosting) · `https://operateguard-<hash>-uc.a.run.app` (Cloud Run) · `https://<app>.vercel.app` (Vercel) |
 | **Try it** | Open the link → **Continue as guest analyst** → **Analyze** document **C** |
 | **Demo video** | `<link>` |
 
@@ -84,7 +84,12 @@ bash infra/deploy.sh
 ```
 The script enables the APIs, adds Firebase to the project, creates Firestore, the bucket, the BigQuery table, a least-privilege service account and a Firebase web app, enables anonymous sign-in, deploys Cloud Run from source, then deploys Firestore rules and Hosting. If anonymous sign-in cannot be enabled automatically, enable it in *Firebase console → Authentication → Sign-in method* and re-run.
 
-### Option 2: run locally with a Gemini API key
+### Option 2: deploy to Vercel (about 10 minutes, no gcloud needed)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/<you>/operateguard&env=GEMINI_API_KEY,GCP_SERVICE_ACCOUNT_JSON&envDescription=Gemini%20API%20key%20and%20base64%20Firebase%20service-account%20key&envLink=https://github.com/<you>/operateguard/blob/main/DEPLOY_VERCEL.md)
+
+Create a Firestore database, download a service-account key, get a Gemini API key, then set `GEMINI_API_KEY` and `GCP_SERVICE_ACCOUNT_JSON` on Vercel. `FIREBASE_WEB_CONFIG` is optional and adds sign-in and live listeners. Step-by-step: **[DEPLOY_VERCEL.md](DEPLOY_VERCEL.md)**.
+
+### Option 3: run locally with a Gemini API key
 ```bash
 pip install -r requirements.txt
 export GEMINI_API_KEY=<key from aistudio.google.com>    # memory store, no login, real Gemini
@@ -94,7 +99,7 @@ uvicorn app.main:app --port 8080                         # open http://localhost
 ### Tests (offline)
 ```bash
 pip install -r requirements-dev.txt
-python -m pytest -q          # 32 tests: safety suite, verifier, rules for all 10 docs, hash chain, retries
+python -m pytest -q          # 34 tests: safety suite, verifier, rules for all 10 docs, hash chain, retries
 ```
 Tests use `tests/conftest.py::FakeLLM` (answers derived from ground truth) so the deterministic layers can be tested without network access. It is never used by the running service.
 
@@ -106,6 +111,7 @@ Writes `eval/report.md` and `eval/results.json`: latency p50/p95, 12-entity extr
 
 ## Repository layout
 ```
+api/index.py    Vercel serverless entrypoint (vercel.json)
 app/            FastAPI service: main.py (routes), gate.py, state.py, audit.py, hashing.py, store.py, auth.py, mock_enterprise.py
 app/agents/     pipeline.py, extraction.py, policy_audit.py, dispatch.py, rules.py, verifier.py, policy_kb.py, llm.py, pdftext.py
 web/            analyst console (vanilla JS, pdf.js, Firebase JS SDK) - no build step

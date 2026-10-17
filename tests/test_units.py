@@ -142,3 +142,24 @@ def test_llm_invalid_json_retries_once_then_fails():
     with pytest.raises(LLMError):
         asyncio.run(c.generate_json(model="m", schema=SupervisorLLM, system="s", parts=[types.Part.from_text(text="x")]))
     assert m.n == 2
+
+
+def test_blob_chunking_roundtrip():
+    from app.store import BLOB_CHUNK, MemoryStore, split_chunks
+    data = bytes(range(256)) * (BLOB_CHUNK // 256 * 3 + 7)
+    chunks = split_chunks(data)
+    assert len(chunks) == 4 and all(len(c) <= BLOB_CHUNK for c in chunks) and b"".join(chunks) == data
+    s = MemoryStore()
+    s.put_blob("inbound__u__DOC-1.pdf", data)
+    assert s.get_blob("inbound__u__DOC-1.pdf") == data
+
+
+def test_service_account_bootstrap(monkeypatch, tmp_path):
+    import base64, importlib, json, os
+    monkeypatch.delenv("GOOGLE_APPLICATION_CREDENTIALS", raising=False)
+    monkeypatch.delenv("GOOGLE_CLOUD_PROJECT", raising=False)
+    monkeypatch.setenv("GCP_SERVICE_ACCOUNT_JSON", base64.b64encode(json.dumps({"project_id": "p-1"}).encode()).decode())
+    from app import config
+    config._bootstrap_service_account()
+    assert os.environ["GOOGLE_CLOUD_PROJECT"] == "p-1"
+    assert json.loads(open(os.environ["GOOGLE_APPLICATION_CREDENTIALS"]).read())["project_id"] == "p-1"

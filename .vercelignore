@@ -1,0 +1,17 @@
+.git
+.venv
+__pycache__
+.pytest_cache
+.local_uploads
+tests
+docs
+eval
+scripts
+infra
+submission
+data/ground_truth
+data/generate_data.py
+Dockerfile
+.dockerignore
+firebase.json
+requirements-dev.txt

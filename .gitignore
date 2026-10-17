@@ -9,3 +9,6 @@ infra/.env.yaml
 firebase-debug.log
 firestore-debug.log
 eval/_local/
+.vercel/
+*service-account*.json
+*-firebase-adminsdk-*.json

@@ -28,7 +28,8 @@ def _firebase():
 
 def current_user(authorization: str | None = Header(default=None)) -> User:
     if settings.auth_mode == "none":
-        return User(uid="local-analyst", email="analyst@localhost", name="Local Analyst", anonymous=False)
+        # Shared demo workspace: every visitor acts as the same demo analyst.
+        return User(uid="demo-analyst", email=None, name=settings.demo_user_name, anonymous=False)
     if not authorization or not authorization.lower().startswith("bearer "):
         raise HTTPException(status_code=401, detail="Missing Firebase ID token")
     token = authorization.split(" ", 1)[1].strip()

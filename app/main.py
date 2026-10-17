@@ -37,7 +37,7 @@ def mock() -> MockEnterprise:
 
 # Simple per-user rate limit so a public demo cannot run up the Gemini bill.
 _runs: dict[str, deque] = defaultdict(deque)
-RUNS_PER_HOUR = 40
+RUNS_PER_HOUR = settings.runs_per_hour
 
 
 def _rate_limit(uid: str) -> None:
@@ -46,7 +46,7 @@ def _rate_limit(uid: str) -> None:
     while q and q[0] < cutoff:
         q.popleft()
     if len(q) >= RUNS_PER_HOUR:
-        raise HTTPException(429, "Demo limit reached: 40 documents per hour per analyst")
+        raise HTTPException(429, f"Demo limit reached: {RUNS_PER_HOUR} documents per hour")
     q.append(time.time())
 
 
@@ -66,7 +66,8 @@ def _summary(c: dict) -> dict:
 # ------------------------------------------------------------------ public
 @app.get("/healthz")
 def healthz():
-    return {"ok": True, "store": settings.store_backend, "auth": settings.auth_mode}
+    return {"ok": True, "store": settings.store_backend, "auth": settings.auth_mode,
+            "gemini": "vertex" if settings.use_vertex else "api-key", "warnings": settings.warnings()}
 
 
 @app.get("/api/config")
@@ -224,4 +225,6 @@ async def _key_error(_, exc):
 
 
 # ------------------------------------------------------------------ web console
-app.mount("/", StaticFiles(directory=WEB_DIR, html=True), name="web")
+# On Cloud Run / local the service also serves the console. On Vercel the CDN serves web/ directly.
+if WEB_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=WEB_DIR, html=True), name="web")
