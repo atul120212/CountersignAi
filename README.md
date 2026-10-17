@@ -5,6 +5,8 @@ An analyst uploads a vendor SOW, contract or invoice. Gemini extracts the key te
 
 > All documents, policies, companies and people in this repository are **synthetic demo data**.
 
+**Guides:** [User guide](USER_GUIDE.md) for analysts and evaluators · [Developer guide](DEVELOPER_GUIDE.md) for the full flow, modules, rules, API and extension points · [Vercel deploy](DEPLOY_VERCEL.md)
+
 | | |
 |---|---|
 | **Live prototype** | `https://<PROJECT_ID>.web.app` (Firebase Hosting) · `https://operateguard-<hash>-uc.a.run.app` (Cloud Run) · `https://<app>.vercel.app` (Vercel) |
