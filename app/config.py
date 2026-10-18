@@ -65,7 +65,7 @@ class Settings:
         raw = os.getenv("FIREBASE_WEB_CONFIG", "").strip()
         self.firebase_web_config = json.loads(raw) if raw else None
         self.auth_mode = os.getenv("AUTH_MODE", "firebase" if self.firebase_web_config else "none")
-        self.demo_user_name = os.getenv("DEMO_USER_NAME", "Demo Analyst" if ON_VERCEL else "Local Analyst")
+        self.demo_user_name = os.getenv("DEMO_USER_NAME", "Demo Analyst")
 
         # Vercel serverless functions accept request bodies up to 4.5 MB.
         self.max_upload_mb = int(os.getenv("MAX_UPLOAD_MB", "4" if ON_VERCEL else "15"))

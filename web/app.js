@@ -1,4 +1,4 @@
-// OperateGuard AI - analyst console (vanilla JS, no build step).
+// Countersign AI - analyst console (vanilla JS, no build step).
 // Auth: Firebase Authentication. Live updates: Cloud Firestore onSnapshot (falls back to polling the API).
 const FB = "10.12.2";
 const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
